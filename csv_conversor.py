@@ -17,7 +17,8 @@ from datetime import datetime
 
 _date_fmt = "%Y-%m-%d %H:%M:%S"
 
-def timezoneID_from_latlong(latitude, longitude):
+
+def timezone_google_maps(latitude, longitude):
     timestamp = time.time()
     api_response = requests.get('https://maps.googleapis.com/maps/api/timezone/json?location={0},{1}&timestamp={2}'.format(latitude,longitude,timestamp))
     api_response_dict = api_response.json()
@@ -25,29 +26,35 @@ def timezoneID_from_latlong(latitude, longitude):
     if api_response_dict['status'] == 'OK':
         timezone_id = api_response_dict['timeZoneId']
         timezone_name = api_response_dict['timeZoneName']
-        return timezone_id
+        return timezone(timezone_id)
 
-def load_csv_file_and_add_timezone(file):
-    csv_rows = []
+
+def load_csv(file):
     with open(file, newline='') as csvfile:
         reader = csv.reader(csvfile)
-        for row in reader:
-            strt = time.strptime(row[0], _date_fmt)
-            utc_time = datetime.fromtimestamp(mktime(strt))
-            tz = timezone(timezoneID_from_latlong(row[1], row[2]))
-            tz_time = utc_time.replace(tzinfo=pytz.utc).astimezone(tz).strftime(_date_fmt)
-            csv_rows.append((row[0], row[1], row[2], tz, tz_time))
-    return csv_rows
-
+        return list(reader)
 
 def save_csv(file, rows):
     with open(file, 'w', newline='') as f:
         writer = csv.writer(f)
         writer.writerows(rows)
 
+
+def add_timezone(rows):
+    rows_with_timezone = []
+    for row in rows:
+            utc_time = datetime.strptime(row[0], _date_fmt)
+            tz = timezone_google_maps(row[1], row[2])
+            tz_time = utc_time.replace(tzinfo=pytz.utc).astimezone(tz).strftime(_date_fmt)
+            rows_with_timezone.append((row[0], row[1], row[2], tz, tz_time))
+    return rows_with_timezone
+
+
 def convert(input, output):
-    rows = load_csv_file_and_add_timezone(input)
-    save_csv(output, rows)
+    input_rows = load_csv(input)
+    output_rows = add_timezone(input_rows)
+    #rows = load_csv_file_and_add_timezone(input)
+    save_csv(output, output_rows)
 
 def main():
     parser = argparse.ArgumentParser(
