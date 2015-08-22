@@ -49,8 +49,8 @@ def main():
     parser = argparse.ArgumentParser(
     description='Convert CSV file adding timezone information.'
     )
-    parser.add_argument('-i', '--input', help='CSV input file name.')
-    parser.add_argument('-o', '--output', help='CSV output file name.')
+    parser.add_argument('-i', '--input', help='CSV input file name.', default='input.csv')
+    parser.add_argument('-o', '--output', help='CSV output file name.', default='output.csv')
     args = parser.parse_args()
     #inputfile = 'input.csv'
     #outputfile = 'output.csv'
