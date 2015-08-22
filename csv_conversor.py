@@ -1,7 +1,7 @@
 '''
   Convert input.csv to output.csv
   The row format of input.csv is 2013-07-10 02:52:49,-44.490947,171.220966
-  The output.csv is appended for every row readed in the input.csv
+  In output.csv the rows receive timezone information.
 
   For run this script you need install Python 3, package pytz and requests.
 '''
