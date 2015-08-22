@@ -10,6 +10,7 @@ import time
 import datetime
 import requests
 import pytz
+import argparse
 from pytz import timezone
 from time import mktime
 from datetime import datetime
@@ -45,8 +46,17 @@ def save_csv(file, rows):
         writer.writerows(rows)
 
 def main():
-    rows = load_csv_file_and_add_timezone('input.csv')
-    save_csv('output2.csv', rows)
+    parser = argparse.ArgumentParser(
+    description='Convert CSV file adding timezone information.'
+    )
+    parser.add_argument('-i', '--input', help='CSV input file name.')
+    parser.add_argument('-o', '--output', help='CSV output file name.')
+    args = parser.parse_args()
+    #inputfile = 'input.csv'
+    #outputfile = 'output.csv'
+
+    rows = load_csv_file_and_add_timezone(args.input)
+    save_csv(args.output, rows)
 
 if __name__ == '__main__':
     main()
