@@ -44,6 +44,9 @@ def save_csv(file, rows):
         writer = csv.writer(f)
         writer.writerows(rows)
 
+def main():
+    rows = load_csv_file_and_add_timezone('input.csv')
+    save_csv('output2.csv', rows)
 
-rows = load_csv_file_and_add_timezone('input.csv')
-save_csv('output2.csv', rows)
+if __name__ == '__main__':
+    main()
