@@ -50,7 +50,7 @@ def add_timezone(rows):
         tz = timezone_google_maps(row[1], row[2])
         tz_time = utc_time.replace(
             tzinfo=pytz.utc).astimezone(tz).strftime(_date_fmt)
-        rows_with_timezone.append((row[0], row[1], row[2], tz, tz_time))
+        rows_with_timezone.append((row[0], row[1], row[2], str(tz), str(tz_time)))
     return rows_with_timezone
 
 
