@@ -14,6 +14,8 @@ from pytz import timezone
 from time import mktime
 from datetime import datetime
 
+_date_fmt = "%Y-%m-%d %H:%M:%S"
+
 def timezoneID_from_latlong(latitude, longitude):
     timestamp = time.time()
     api_response = requests.get('https://maps.googleapis.com/maps/api/timezone/json?location={0},{1}&timestamp={2}'.format(latitude,longitude,timestamp))
@@ -24,17 +26,24 @@ def timezoneID_from_latlong(latitude, longitude):
         timezone_name = api_response_dict['timeZoneName']
         return timezone_id
 
-def write_row(row):
-    with open('output.csv', 'a', newline='') as f:
-        writer = csv.writer(f)
-        writer.writerow(row)
+def load_csv_file_and_add_timezone(file):
+    csv_rows = []
+    with open(file, newline='') as csvfile:
+        reader = csv.reader(csvfile)
+        for row in reader:
+            strt = time.strptime(row[0], _date_fmt)
+            utc_time = datetime.fromtimestamp(mktime(strt))
+            tz = timezone(timezoneID_from_latlong(row[1], row[2]))
+            tz_time = utc_time.replace(tzinfo=pytz.utc).astimezone(tz).strftime(_date_fmt)
+            csv_rows.append((row[0], row[1], row[2], tz, tz_time))
+    return csv_rows
 
-with open('input.csv', newline='') as csvfile:
-    date_fmt = "%Y-%m-%d %H:%M:%S"
-    reader = csv.reader(csvfile)
-    for row in reader:
-        strt = time.strptime(row[0], date_fmt)
-        utc_time = datetime.fromtimestamp(mktime(strt))
-        tz = timezone(timezoneID_from_latlong(row[1], row[2]))
-        tz_time = utc_time.replace(tzinfo=pytz.utc).astimezone(tz).strftime(date_fmt)
-        write_row((row[0], row[1], row[2], tz, tz_time))
+
+def save_csv(file, rows):
+    with open(file, 'w', newline='') as f:
+        writer = csv.writer(f)
+        writer.writerows(rows)
+
+
+rows = load_csv_file_and_add_timezone('input.csv')
+save_csv('output2.csv', rows)
