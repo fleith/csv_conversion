@@ -45,6 +45,10 @@ def save_csv(file, rows):
         writer = csv.writer(f)
         writer.writerows(rows)
 
+def convert(input, output):
+    rows = load_csv_file_and_add_timezone(input)
+    save_csv(output, rows)
+
 def main():
     parser = argparse.ArgumentParser(
     description='Convert CSV file adding timezone information.'
@@ -52,11 +56,7 @@ def main():
     parser.add_argument('-i', '--input', help='CSV input file name.', default='input.csv')
     parser.add_argument('-o', '--output', help='CSV output file name.', default='output.csv')
     args = parser.parse_args()
-    #inputfile = 'input.csv'
-    #outputfile = 'output.csv'
-
-    rows = load_csv_file_and_add_timezone(args.input)
-    save_csv(args.output, rows)
+    convert(args.input, args.output)
 
 if __name__ == '__main__':
     main()
